@@ -39,6 +39,13 @@
             <version>2.10.1</version>
         </dependency>
 
+        <!-- Azure Identity for authentication -->
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity</artifactId>
+            <version>1.13.2</version>
+        </dependency>
+
         <!-- Test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
