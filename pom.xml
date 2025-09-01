@@ -46,6 +46,13 @@
             <version>1.13.2</version>
         </dependency>
 
+        <!-- Microsoft Graph SDK for Java -->
+        <dependency>
+            <groupId>com.microsoft.graph</groupId>
+            <artifactId>microsoft-graph</artifactId>
+            <version>6.51.0</version>
+        </dependency>
+
         <!-- Test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
