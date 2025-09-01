@@ -20,11 +20,27 @@ public class GraphEmailService {
     private final HttpClient httpClient;
     private final Gson gson;
 
+    // Default constructor that reads from environment variables
+    public GraphEmailService() {
+        this(
+            System.getenv("AZURE_T_ID"),
+            System.getenv("AZURE_CLIENT_ID"), 
+            System.getenv("AZURE_CLIENT_SECRET"),
+            System.getenv("GRAPH_FROM_USER_ID"),
+            Logger.getLogger(GraphEmailService.class.getName())
+        );
+    }
+
     public GraphEmailService(String tenantId, String clientId, String clientSecret, String fromUserId, Logger logger) {
         this.fromUserId = fromUserId;
         this.logger = logger;
         this.httpClient = HttpClient.newHttpClient();
         this.gson = new Gson();
+
+        // Validate required parameters
+        if (tenantId == null || clientId == null || clientSecret == null || fromUserId == null) {
+            throw new IllegalArgumentException("Missing required Graph API configuration. Please set AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET, and GRAPH_FROM_USER_ID environment variables.");
+        }
 
         // Create credential using app registration
         this.credential = new ClientSecretCredentialBuilder()

@@ -8,48 +8,53 @@ import com.google.gson.Gson;
 import java.util.logging.Level;
 
 public class EmployeeTrigger {
-    
+
     @FunctionName("EmployeeTrigger")
     public void run(
-            @SQLTrigger(
-                name = "employeeItems",
-                tableName = "[dbo].[employee]",
-                connectionStringSetting = "SqlConnectionString")
-                SqlChangeEmployeeItem[] employeeItems,
+            @SQLTrigger(name = "employeeItems", tableName = "[dbo].[employee]", connectionStringSetting = "SqlConnectionString") SqlChangeEmployeeItem[] employeeItems,
             ExecutionContext context) {
 
         context.getLogger().log(Level.INFO, "=== SQL TRIGGER FIRED ===");
-        context.getLogger().log(Level.INFO, "Received " + (employeeItems != null ? employeeItems.length : "null") + " employee items");
-        
-        if (employeeItems != null) {
-            for (int i = 0; i < employeeItems.length; i++) {
-                SqlChangeEmployeeItem change = employeeItems[i];
-                context.getLogger().log(Level.INFO, "=== Processing Item " + i + " ===");
-                
-                if (change != null) {
-                    context.getLogger().log(Level.INFO, "Operation: " + (change.Operation != null ? change.Operation : "null"));
-                    context.getLogger().log(Level.INFO, "Item is null: " + (change.Item == null));
-                    
-                    if (change.Item != null) {
-                        context.getLogger().log(Level.INFO, "Employee ID: " + change.Item.id);
-                        context.getLogger().log(Level.INFO, "Employee Name: " + change.Item.name);
-                        
-                        // Send email only for INSERT operations
-                        if (change.Operation == SqlChangeOperation.Insert) {
-                            context.getLogger().log(Level.INFO, "New employee inserted: " + change.Item.name + " (ID: " + change.Item.id + ")");
-                            // TODO: Add email sending logic here
-                        }
+        context.getLogger().log(Level.INFO,
+                "Received " + (employeeItems != null ? employeeItems.length : "null") + " employee items");
+
+        for (int i = 0; i < employeeItems.length; i++) {
+            SqlChangeEmployeeItem change = employeeItems[i];
+
+            // Send email only for INSERT operations
+            if (change.Operation == SqlChangeOperation.Insert) {
+                context.getLogger().log(Level.INFO,
+                        "New employee inserted: " + change.Item.name + " (ID: " + change.Item.id + ")");
+
+                try {
+                    GraphEmailService emailService = new GraphEmailService();
+                    String subject = "New Employee Added: " + change.Item.name;
+                    String body = String.format(
+                            "A new employee has been added to the system:\n\n" +
+                                    "Name: %s\n" +
+                                    "ID: %d\n\n" +
+                                    "This is an automated notification from the Employee Management System.",
+                            change.Item.name, change.Item.id);
+
+                    // Send to a configured recipient (you can make this configurable via app
+                    // settings)
+                    String recipientEmail = System.getenv("NOTIFICATION_EMAIL");
+                    if (recipientEmail != null && !recipientEmail.isEmpty()) {
+                        emailService.sendEmail(recipientEmail, subject, body);
+                        context.getLogger().log(Level.INFO,
+                                "Email notification sent successfully to: " + recipientEmail);
                     } else {
-                        context.getLogger().log(Level.WARNING, "Item object is NULL!");
+                        context.getLogger().log(Level.WARNING,
+                                "NOTIFICATION_EMAIL not configured - skipping email notification");
                     }
-                } else {
-                    context.getLogger().log(Level.WARNING, "Change object is NULL!");
+                } catch (Exception e) {
+                    context.getLogger().log(Level.SEVERE,
+                            "Failed to send email notification: " + e.getMessage());
                 }
+
             }
-        } else {
-            context.getLogger().log(Level.INFO, "employeeItems array is NULL!");
         }
-        
+
         context.getLogger().log(Level.INFO, "SQL Changes: " + new Gson().toJson(employeeItems));
         context.getLogger().log(Level.INFO, "=== END SQL TRIGGER ===");
     }
