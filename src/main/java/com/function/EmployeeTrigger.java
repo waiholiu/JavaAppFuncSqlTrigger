@@ -19,32 +19,28 @@ public class EmployeeTrigger {
             ExecutionContext context) {
 
         context.getLogger().log(Level.INFO, "=== SQL TRIGGER FIRED ===");
-        context.getLogger().log(Level.INFO, "employeeItems is null: " + (employeeItems == null));
+        context.getLogger().log(Level.INFO, "Received " + (employeeItems != null ? employeeItems.length : "null") + " employee items");
         
         if (employeeItems != null) {
-            context.getLogger().log(Level.INFO, "employeeItems length: " + employeeItems.length);
-            
             for (int i = 0; i < employeeItems.length; i++) {
                 SqlChangeEmployeeItem change = employeeItems[i];
                 context.getLogger().log(Level.INFO, "=== Processing Item " + i + " ===");
-                context.getLogger().log(Level.INFO, "Change object is null: " + (change == null));
                 
                 if (change != null) {
-                    context.getLogger().log(Level.INFO, "Operation is null: " + (change.operation == null));
-                    context.getLogger().log(Level.INFO, "Item is null: " + (change.item == null));
+                    context.getLogger().log(Level.INFO, "Operation: " + (change.Operation != null ? change.Operation : "null"));
+                    context.getLogger().log(Level.INFO, "Item is null: " + (change.Item == null));
                     
-                    if (change.operation != null) {
-                        context.getLogger().log(Level.INFO, "Operation: " + change.operation);
-                    }
-                    
-                    if (change.item != null) {
-                        context.getLogger().log(Level.INFO, "Employee ID: " + change.item.id);
-                        context.getLogger().log(Level.INFO, "Employee Name: " + change.item.name);
+                    if (change.Item != null) {
+                        context.getLogger().log(Level.INFO, "Employee ID: " + change.Item.id);
+                        context.getLogger().log(Level.INFO, "Employee Name: " + change.Item.name);
                         
-                        // Only log about email sending, don't actually send it yet
-                        if (change.operation == SqlChangeOperation.Insert) {
-                            context.getLogger().log(Level.INFO, "Would send email for new employee: " + change.item.name);
+                        // Send email only for INSERT operations
+                        if (change.Operation == SqlChangeOperation.Insert) {
+                            context.getLogger().log(Level.INFO, "New employee inserted: " + change.Item.name + " (ID: " + change.Item.id + ")");
+                            // TODO: Add email sending logic here
                         }
+                    } else {
+                        context.getLogger().log(Level.WARNING, "Item object is NULL!");
                     }
                 } else {
                     context.getLogger().log(Level.WARNING, "Change object is NULL!");
@@ -54,7 +50,7 @@ public class EmployeeTrigger {
             context.getLogger().log(Level.INFO, "employeeItems array is NULL!");
         }
         
-        context.getLogger().log(Level.INFO, "Raw JSON: " + new Gson().toJson(employeeItems));
+        context.getLogger().log(Level.INFO, "SQL Changes: " + new Gson().toJson(employeeItems));
         context.getLogger().log(Level.INFO, "=== END SQL TRIGGER ===");
     }
 }
