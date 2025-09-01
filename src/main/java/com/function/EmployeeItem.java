@@ -1,14 +1,30 @@
 package com.function;
 
-class EmployeeItem {
-    public int Id;
+public class EmployeeItem {
+    public int id;
     public String name;
 
     public EmployeeItem() {
     }
 
-    public EmployeeItem(int Id, String name) {
-            this.Id = Id;
-            this.name = name;
-        }
+    public EmployeeItem(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }
