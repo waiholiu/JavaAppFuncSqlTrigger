@@ -62,6 +62,22 @@ ENABLE CHANGE_TRACKING
 WITH (TRACK_COLUMNS_UPDATED = ON) 
 ```
 
+## Employee table
+
+For this solution specifically, you'll need a SQL table called Employees
+
+```
+CREATE TABLE [dbo].[employee](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[name] [varchar](100) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+```
+
 
 # App Registration
 
