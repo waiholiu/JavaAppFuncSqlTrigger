@@ -1,7 +1,8 @@
 package com.function;
 
-import com.azure.identity.ClientSecretCredential;
 import com.azure.identity.ClientSecretCredentialBuilder;
+import com.azure.identity.DefaultAzureCredentialBuilder;
+import com.azure.core.credential.TokenCredential;
 import com.microsoft.graph.serviceclient.GraphServiceClient;
 import com.microsoft.graph.models.Message;
 import com.microsoft.graph.models.ItemBody;
@@ -31,19 +32,29 @@ public class GraphEmailService {
         this.fromUserId = fromUserId;
         this.logger = logger;
 
-        // Validate required parameters
-        if (tenantId == null || clientId == null || clientSecret == null || fromUserId == null) {
-            throw new IllegalArgumentException("Missing required Graph API configuration. Please set AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET, and GRAPH_FROM_USER_ID environment variables.");
+        // Validate required parameters - fromUserId is always required
+        if (fromUserId == null) {
+            throw new IllegalArgumentException("Missing required Graph API configuration. Please set GRAPH_FROM_USER_ID environment variable.");
         }
 
-        // Create credential using app registration
-        ClientSecretCredential credential = new ClientSecretCredentialBuilder()
-                .tenantId(tenantId)
-                .clientId(clientId)
-                .clientSecret(clientSecret)
-                .build();
+        TokenCredential credential;
+        
+        // Check if all app registration credentials are provided
+        if (tenantId != null && clientId != null && clientSecret != null) {
+            // Use ClientSecretCredential when explicit credentials are provided
+            logger.info("Using ClientSecretCredential with provided app registration details");
+            credential = new ClientSecretCredentialBuilder()
+                    .tenantId(tenantId)
+                    .clientId(clientId)
+                    .clientSecret(clientSecret)
+                    .build();
+        } else {
+            // Use DefaultAzureCredential for managed identity or other default auth methods
+            logger.info("Using DefaultAzureCredential (managed identity or default Azure authentication)");
+            credential = new DefaultAzureCredentialBuilder().build();
+        }
 
-        // Initialize Graph Service Client - using the newer constructor approach
+        // Initialize Graph Service Client
         this.graphServiceClient = new GraphServiceClient(credential);
         
         logger.info("GraphServiceClient initialized successfully");
