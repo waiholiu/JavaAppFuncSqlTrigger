@@ -1,8 +1,11 @@
 package com.function;
 
+import java.time.LocalDate;
+
 public class EmployeeItem {
     public int id;
     public String name;
+    public LocalDate hireDate;
 
     public EmployeeItem() {
     }
@@ -26,5 +29,13 @@ public class EmployeeItem {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public LocalDate getHireDate() {
+        return hireDate;
+    }
+
+    public void setHireDate(LocalDate hireDate) {
+        this.hireDate = hireDate;
     }
 }
