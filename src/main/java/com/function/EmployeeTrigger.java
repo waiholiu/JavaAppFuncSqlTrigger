@@ -29,11 +29,16 @@ public class EmployeeTrigger {
                     GraphEmailService emailService = new GraphEmailService();
                     String subject = "New Employee Added: " + change.Item.name;
                     String body = String.format(
-                            "A new employee has been added to the system:\n\n" +
-                                    "Name: %s\n" +
-                                    "ID: %d\n\n" +
-                                    "This is an automated notification from the Employee Management System.",
-                            change.Item.name, change.Item.id);
+                            "<h2>New Employee Added</h2>" +
+                            "<p>A new employee has been added to the system:</p>" +
+                            "<ul>" +
+                            "<li><strong>Name:</strong> %s</li>" +
+                            "<li><strong>ID:</strong> %d</li>" +
+                            "<li><strong>Hire Date:</strong> %s</li>" +
+                            "</ul>" +
+                            "<p>This is an automated notification from the Employee Management System.</p>",
+                            change.Item.name, change.Item.id, 
+                            change.Item.hireDate != null ? change.Item.hireDate.toString() : "Not specified");
 
                     // Send to a configured recipient (you can make this configurable via app
                     // settings)
