@@ -70,6 +70,7 @@ For this solution specifically, you'll need a SQL table called Employees
 CREATE TABLE [dbo].[employee](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[name] [varchar](100) NOT NULL,
+	[hireDate] [date] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[id] ASC

@@ -3,7 +3,6 @@ package com.function;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.sql.annotation.SQLTrigger;
-import com.google.gson.Gson;
 
 import java.util.logging.Level;
 
@@ -55,7 +54,6 @@ public class EmployeeTrigger {
             }
         }
 
-        context.getLogger().log(Level.INFO, "SQL Changes: " + new Gson().toJson(employeeItems));
         context.getLogger().log(Level.INFO, "=== END SQL TRIGGER ===");
     }
 }
